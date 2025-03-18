@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs e Arquivos Recebidos</title>
+    <style>
+        /* Importando fonte moderna */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        /* Estilo global */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Estilo da tabela */
+        table {
+            width: 90%;
+            max-width: 1100px;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            box-shadow: 0px 12px 25px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        table:hover {
+            transform: scale(1.02);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 16px;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.2);
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transition: 0.3s;
+        }
+
+        /* Estilo do conteúdo dos logs */
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            border-left: 4px solid #ffcc00;
+            font-family: 'Courier New', monospace;
+            box-shadow: inset 2px 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Estilo das imagens */
+        img {
+            max-width: 80px;
+            max-height: 80px;
+            border-radius: 6px;
+            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+        }
+
+        img:hover {
+            transform: scale(1.2);
+            box-shadow: 0px 6px 12px rgba(255, 255, 255, 0.6);
+        }
+
+        /* Botões de download aprimorados */
+        a {
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 6px;
+            color: #fff;
+            background: linear-gradient(to right, #ff512f, #dd2476);
+            display: inline-block;
+            text-align: center;
+            transition: 0.3s ease-in-out;
+            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        a:hover {
+            background: linear-gradient(to right, #dd2476, #ff512f);
+            transform: scale(1.1);
+            box-shadow: 0px 6px 12px rgba(255, 81, 47, 0.5);
+        }
+
+        /* Rodapé estilizado */
+        .footer {
+            margin-top: 30px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: bold;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        /* Animação de entrada */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tornando a tabela responsiva */
+        @media (max-width: 768px) {
+            table {
+                width: 100%;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            img {
+                max-width: 60px;
+                max-height: 60px;
+            }
+
+            a {
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>Logs e Arquivos Recebidos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Arquivo</th>
+                <th>Conteúdo</th>
+                <th>Data/Hora</th>
+                <th>Download</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log[0] }}</td>
+                <td>{{ log[1] }}</td>
+                <td>
+                    {% if log[1].endswith('.txt') or log[1].endswith('.log') %}
+                        <pre>{{ log[2] }}</pre>
+                    {% elif log[1].endswith('.png') or log[1].endswith('.jpg') or log[1].endswith('.jpeg') %}
+                        <img src="{{ url_for('download_file', filename=log[1]) }}" alt="Imagem">
+                    {% elif log[1].endswith('.pdf') %}
+                        <a href="{{ url_for('download_file', filename=log[1]) }}" target="_blank">Visualizar PDF</a>
+                    {% else %}
+                        (Arquivo binário - clique para baixar)
+                    {% endif %}
+                </td>
+                <td>{{ log[3] }}</td>
+                <td>
+                    <a href="{{ url_for('download_file', filename=log[1]) }}" download>Baixar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Created By <strong>Ackles & Aizen</strong>
+    </div>
+</body>
+</html>
