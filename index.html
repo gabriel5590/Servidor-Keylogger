@@ -1,201 +1,337 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logs e Arquivos Recebidos</title>
+    <title>Logs e Shells Recebidos</title>
     <style>
-        /* Importando fonte moderna */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
-        /* Estilo global */
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            color: #fff;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1c1c1c, #292929);
+            color: white;
             text-align: center;
+            padding: 20px;
         }
 
-        h2 {
-            font-size: 32px;
+        h1 {
             margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.6);
-        }
-
-        /* Estilo da tabela */
-        table {
-            width: 90%;
-            max-width: 1100px;
-            margin: 20px auto;
-            border-collapse: collapse;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            overflow: hidden;
-            backdrop-filter: blur(12px);
-            box-shadow: 0px 12px 25px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s ease-in-out;
-        }
-
-        table:hover {
-            transform: scale(1.02);
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            font-size: 16px;
-        }
-
-        th {
-            background: rgba(255, 255, 255, 0.2);
+            font-size: 28px;
             text-transform: uppercase;
         }
 
-        tr:nth-child(even) {
-            background: rgba(255, 255, 255, 0.1);
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
         }
 
-        tr:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            background: #333;
+            border-radius: 5px;
+            margin: 0 5px;
+            font-weight: bold;
             transition: 0.3s;
         }
 
-        /* Estilo do conteúdo dos logs */
-        pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            background: rgba(255, 255, 255, 0.15);
+        .tab.active, .tab:hover {
+            background: #4CAF50;
+        }
+
+        .content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: #222;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
             padding: 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            border-left: 4px solid #ffcc00;
-            font-family: 'Courier New', monospace;
-            box-shadow: inset 2px 2px 10px rgba(0, 0, 0, 0.3);
+            text-align: left;
         }
 
-        /* Estilo das imagens */
-        img {
-            max-width: 80px;
-            max-height: 80px;
-            border-radius: 6px;
-            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+        th {
+            background: #4CAF50;
+            color: white;
         }
 
-        img:hover {
-            transform: scale(1.2);
-            box-shadow: 0px 6px 12px rgba(255, 255, 255, 0.6);
+        tr {
+            transition: 0.3s;
         }
 
-        /* Botões de download aprimorados */
+        tr:nth-child(even) {
+            background: #2a2a2a;
+        }
+
+        tr:hover {
+            background: #4CAF50;
+            color: white;
+        }
+
         a {
+            color: #4CAF50;
             text-decoration: none;
             font-weight: bold;
-            padding: 10px 15px;
-            border-radius: 6px;
-            color: #fff;
-            background: linear-gradient(to right, #ff512f, #dd2476);
-            display: inline-block;
-            text-align: center;
-            transition: 0.3s ease-in-out;
-            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.4);
         }
 
         a:hover {
-            background: linear-gradient(to right, #dd2476, #ff512f);
-            transform: scale(1.1);
-            box-shadow: 0px 6px 12px rgba(255, 81, 47, 0.5);
+            text-decoration: underline;
         }
 
-        /* Rodapé estilizado */
-        .footer {
-            margin-top: 30px;
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.85);
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
             font-weight: bold;
-            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
-            animation: fadeIn 1.5s ease-in-out;
+            transition: 0.3s;
         }
 
-        /* Animação de entrada */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        button:hover {
+            background-color: #45a049;
         }
 
-        /* Tornando a tabela responsiva */
-        @media (max-width: 768px) {
-            table {
-                width: 100%;
-            }
+        /* Modal estilizado */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
 
-            th, td {
-                padding: 10px;
-                font-size: 14px;
-            }
+        .modal-content {
+            background: #1c1c1c;
+            padding: 20px;
+            width: 80%; /* Aumentado para ocupar mais largura */
+            height: 90%; /* Aumentado para ocupar mais altura */
+            overflow: auto; /* Permite rolar o conteúdo se necessário */
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.2);
+            position: relative;
+            color: white;
+            max-width: 1200px; /* Tamanho máximo de largura */
+            max-height: 90vh; /* A altura máxima é 90% da altura da tela */
+        }
 
-            img {
-                max-width: 60px;
-                max-height: 60px;
-            }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 22px;
+            cursor: pointer;
+        }
 
-            a {
-                padding: 8px 12px;
-            }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 80vh;
+            overflow-y: auto;
         }
     </style>
 </head>
 <body>
-    <h2>Logs e Arquivos Recebidos</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Arquivo</th>
-                <th>Conteúdo</th>
-                <th>Data/Hora</th>
-                <th>Download</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for log in logs %}
-            <tr>
-                <td>{{ log[0] }}</td>
-                <td>{{ log[1] }}</td>
-                <td>
-                    {% if log[1].endswith('.txt') or log[1].endswith('.log') %}
-                        <pre>{{ log[2] }}</pre>
-                    {% elif log[1].endswith('.png') or log[1].endswith('.jpg') or log[1].endswith('.jpeg') %}
-                        <img src="{{ url_for('download_file', filename=log[1]) }}" alt="Imagem">
-                    {% elif log[1].endswith('.pdf') %}
-                        <a href="{{ url_for('download_file', filename=log[1]) }}" target="_blank">Visualizar PDF</a>
-                    {% else %}
-                        (Arquivo binário - clique para baixar)
-                    {% endif %}
-                </td>
-                <td>{{ log[3] }}</td>
-                <td>
-                    <a href="{{ url_for('download_file', filename=log[1]) }}" download>Baixar</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 
-    <div class="footer">
-        Created By <strong>Ackles & Aizen</strong>
+    <h1>Logs, Shells e Arquivos Recebidos</h1>
+
+    <div class="tab-container">
+        <div class="tab active" onclick="openTab('logs')">Logs e Arquivos</div>
+        <div class="tab" onclick="openTab('shells')">Shells Recebidas</div>
+        <div class="tab" onclick="openTab('received_files')">Arquivos Recebidos</div>
     </div>
+
+    <!-- Aba de Logs -->
+    <div id="logs" class="content active">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Arquivo</th>
+                    <th>Data/Hora</th>
+                    <th>Visualizar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log[0] }}</td>
+                    <td>{{ log[1] }}</td>
+                    <td>{{ log[3] }}</td>
+                    <td><button onclick="openLog({{ log[0] }})">Visualizar</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Aba de Shells -->
+    <div id="shells" class="content">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Arquivo</th>
+                    <th>Data/Hora</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for shell in shells %}
+                <tr>
+                    <td>{{ shell[0] }}</td>
+                    <td>{{ shell[1] }}</td>
+                    <td>{{ shell[3] }}</td>
+                    <td><button onclick="openShell({{ shell[0] }})">Visualizar</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Aba de Arquivos Recebidos -->
+    <div id="received_files" class="content">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Arquivo</th>
+                    <th>Data/Hora</th>
+                    <th>Visualizar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in received_files %}
+                <tr>
+                    <td>{{ file[0] }}</td>
+                    <td>{{ file[1] }}</td>
+                    <td>{{ file[3] }}</td>
+                    <td><button onclick="openFile({{ file[0] }})">Visualizar</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para exibir conteúdo do log -->
+    <div id="logModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLog()">&times;</span>
+            <h2>Conteúdo do Log</h2>
+            <pre id="logContent"></pre>
+        </div>
+    </div>
+
+    <!-- Modal para exibir conteúdo do shell -->
+    <div id="shellModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeShell()">&times;</span>
+            <h2>Conteúdo do Shell</h2>
+            <pre id="shellContent"></pre>
+        </div>
+    </div>
+
+    <!-- Modal para exibir conteúdo do arquivo -->
+    <div id="fileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFile()">&times;</span>
+            <h2>Conteúdo do Arquivo</h2>
+            <pre id="fileContent"></pre>
+        </div>
+    </div>
+
+    <script>
+        function openTab(tabName) {
+            document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function openLog(logId) {
+            fetch(`/log_content/${logId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.content) {
+                        document.getElementById("logContent").textContent = data.content;
+                        document.getElementById("logModal").style.display = "flex";
+                    } else {
+                        alert("Erro ao carregar o log.");
+                    }
+                })
+                .catch(() => alert("Erro ao carregar o log."));
+        }
+
+        function closeLog() {
+            document.getElementById("logModal").style.display = "none";
+        }
+
+        function openShell(shellId) {
+            fetch(`/shell_content/${shellId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.content) {
+                        document.getElementById("shellContent").textContent = data.content;
+                        document.getElementById("shellModal").style.display = "flex";
+                    } else {
+                        alert("Erro ao carregar o shell.");
+                    }
+                })
+                .catch(() => alert("Erro ao carregar o shell."));
+        }
+
+        function closeShell() {
+            document.getElementById("shellModal").style.display = "none";
+        }
+
+        function openFile(fileId) {
+            fetch(`/file_content/${fileId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.content) {
+                        document.getElementById("fileContent").textContent = data.content;
+                        document.getElementById("fileModal").style.display = "flex";
+                    } else {
+                        alert("Erro ao carregar o arquivo.");
+                    }
+                })
+                .catch(() => alert("Erro ao carregar o arquivo."));
+        }
+
+        function closeFile() {
+            document.getElementById("fileModal").style.display = "none";
+        }
+    </script>
+
 </body>
 </html>
